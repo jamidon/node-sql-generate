@@ -5,14 +5,15 @@ var program = require('commander'),
 	generate = require('../');
 
 function list(val) {
-	return val.split(',').map(function(re) {
-		try {
-			return new RegExp(re);
-		} catch (e) {
-			console.error('\n  error: bad regular expression: %s\n', re);
-			process.exit(1);
-    		}
-  	});
+	return val.split(',')
+		.map(function(re) {
+			try {
+				return new RegExp(re);
+			} catch (e) {
+				console.error('\n  error: bad regular expression: %s\n', re);
+				process.exit(1);
+			}
+		});
 }
 
 program
@@ -23,7 +24,7 @@ program
 	.option('-i, --indent <token>', 'Indentation token; defaults to a TAB character', '\t')
 	.option('-D, --database <name>', 'Name of database to extract from')
 	.option('-s, --schema <name>', 'Name of schema to extract from (Postgres/MSSQL only)')
-	.option('-r, --exclude-regex <list of RE\'s>', 'List of regular expressions for tables we want to skip', list)
+	.option('-r, --exclude-regex <regexes>', 'Comma-delimited list of regular expressions for tables to exclude', list)
 	.option('--camelize', 'Convert underscored names to camel case, requires sql >= 0.18.0', false)
 	.option('--eol <token>', 'Line terminator token; defaults to "\\n"', '\n')
 	.option('--mode <mode>', 'The permission mode of the generated file; defaults to 0644', 0644)
