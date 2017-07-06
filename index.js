@@ -90,8 +90,10 @@ module.exports = function(options, callback) {
 					req.input(index + 1, value);
 				});
 
-				req.query(query.text, callback);
-				break;
+		  req.query(query.text, (err, result) => {
+                      callback(err, !err && result.recordset);
+                  });
+		  break;
 		}
 	}
 
@@ -327,7 +329,7 @@ module.exports = function(options, callback) {
 				return;
 			}
 
-			client = new db.Connection(mssqlDsn);
+			client = new db.ConnectionPool(mssqlDsn);
 			options.database = options.database || mssqlDsn.database;
 			columns = sql.define({
 				name: 'columns',
