@@ -145,15 +145,33 @@ module.exports = function(options, callback) {
 				callback(err);
 				return;
 			}
-			callback(null, rows.map(function(row) {
-				// don't return excluded tables
-				if (options.excludeRegex &&
-					!options.excludeRegex.every(function(re) { return row.name.match(re) === null; })) {
-					return undefined;
-				} else {
-					return row.name;
-				}
-			}).filter(function(r) { return r !== undefined; }));
+		  callback(null, rows.map(function(row) {
+                    if (options.includeRegex || options.excludeRegex) {
+                      if (options.includeRegex) {
+                        if (options.includeRegex.some(function(re) { return row.name.match(re) !== null; })) {
+			  // don't return excluded tables
+			  if (options.excludeRegex &&
+			      !options.excludeRegex.every(function(re) { return row.name.match(re) === null; })) {
+			    return undefined;
+			  } else {
+			    return row.name;
+			  }
+                        } else {
+			  return undefined;
+                        }
+                      } else if (options.excludeRegex) {
+			if (!options.excludeRegex.every(function(re) { return row.name.match(re) === null; })) {
+			  return undefined;
+		        } else {
+			  return row.name;
+		        }
+                      } else {
+			return undefined;
+                      }
+                    } else {
+		      return row.name;
+		    }
+		  }).filter(function(r) { return r !== undefined; }));
 		});
 	}
 
