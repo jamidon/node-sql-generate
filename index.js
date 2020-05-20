@@ -314,19 +314,22 @@ module.exports = function(options, callback) {
 			sql.setDialect('mssql');
 			//Extract information from mssql dsn to options, since the mssql module do not understand the dsn format
 			var mssqlDsn = options.dsn;
-			if (mssqlDsn.slice(-1) === ';') {
-				mssqlDsn = mssqlDsn.substring(0, mssqlDsn.length - 1);
-			}
-			try {
-				mssqlDsn = JSON.parse("{\"" +
-					mssqlDsn.replace('mssql://', '')
-						.replace(/=/g, '\":\"')
-						.replace(/;/g, '\",\"') +
-					"\"}"
-				);
-			} catch (e) {
-				callback(e);
-				return;
+			//Allow an object to be passed as well as the dsn string
+			if (typeof(mssqlDsn) != 'object') {
+				if (mssqlDsn.slice(-1) === ';') {
+					mssqlDsn = mssqlDsn.substring(0, mssqlDsn.length - 1);
+				}
+				try {
+					mssqlDsn = JSON.parse("{\"" +
+						mssqlDsn.replace('mssql://', '')
+							.replace(/=/g, '\":\"')
+							.replace(/;/g, '\",\"') +
+						"\"}"
+					);
+				} catch (e) {
+					callback(e);
+					return;
+				}
 			}
 
 			client = new db.ConnectionPool(mssqlDsn);
